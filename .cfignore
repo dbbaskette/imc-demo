@@ -1,0 +1,38 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build artifacts (but keep the final JAR)
+target/classes/
+target/test-classes/
+target/generated-sources/
+target/maven-status/
+target/surefire-reports/
+
+# Frontend build (included in Spring Boot static resources)
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
