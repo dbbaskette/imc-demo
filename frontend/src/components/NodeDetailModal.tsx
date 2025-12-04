@@ -192,6 +192,46 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
   nodeData,
   nodeDetails
 }) => {
+  // Ref to track scroll position
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const scrollPositionRef = React.useRef<number>(0);
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
+
+  // Save scroll position whenever it changes
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    scrollPositionRef.current = e.currentTarget.scrollTop;
+  };
+
+  // Handle iframe load to preserve scroll position
+  const handleIframeLoad = () => {
+    // After iframe loads, restore scroll position
+    if (scrollContainerRef.current && scrollPositionRef.current > 0) {
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+        }
+      });
+    }
+  };
+
+  // Restore scroll position after content loads
+  React.useEffect(() => {
+    if (isOpen && scrollContainerRef.current && scrollPositionRef.current > 0) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+        }
+      });
+    }
+  }, [isOpen]);
+
+  // Reset scroll position when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      scrollPositionRef.current = 0;
+    }
+  }, [isOpen]);
 
   // Default content if no specific page is configured
   const defaultContent: NodeDetailConfig = {
@@ -312,7 +352,11 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]"
+        >
           {/* Custom Page Content */}
           {content.customPage ? (
             <div className="mb-6">
@@ -344,6 +388,7 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
               )}
               {content.customPage.type === 'html-file' && content.customPage.file && (
                 <iframe
+                  ref={iframeRef}
                   src={`/configs/details/${content.customPage.file}?t=${Date.now()}`}
                   className="w-full border-0 rounded"
                   style={{
@@ -351,6 +396,7 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
                       `calc(${content.modalSize.height} - 120px)` : '600px'
                   }}
                   title={`${nodeData.name} Dashboard`}
+                  onLoad={handleIframeLoad}
                 />
               )}
             </div>
@@ -358,6 +404,7 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
             // Try to load HTML file directly by node name
             <div className="mb-6">
               <iframe
+                ref={iframeRef}
                 src={`/configs/details/${nodeData.name}.html?t=${Date.now()}`}
                 className="w-full border-0 rounded"
                 style={{
@@ -365,6 +412,7 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
                     `calc(${content.modalSize.height} - 120px)` : '600px'
                 }}
                 title={`${nodeData.name} Dashboard`}
+                onLoad={handleIframeLoad}
                 onError={(e) => {
                   // Hide iframe if HTML file doesn't exist
                   (e.target as HTMLIFrameElement).style.display = 'none';
