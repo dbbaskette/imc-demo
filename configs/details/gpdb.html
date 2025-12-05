@@ -1749,19 +1749,10 @@
         // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM Content Loaded - initializing dashboard');
-            // Load model info first
+            // Load model info and overview data on initial load
             loadModelInfo();
-            // Load overview data immediately since it's the default active tab
             loadOverviewData();
-
-            // Set up auto-refresh for real-time updates (every 30 seconds)
-            setInterval(function() {
-                const activeTab = document.querySelector('.tab-button.active');
-                if (activeTab && activeTab.textContent.includes('Overview')) {
-                    console.log('Auto-refreshing overview data');
-                    loadOverviewData();
-                }
-            }, 30000);
+            // Note: No auto-refresh - ML model data is static and only updates during weekly retraining
         });
     </script>
 </body>
