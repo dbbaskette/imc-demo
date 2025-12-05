@@ -82,5 +82,5 @@ logging:
 
 metrics:
   proxy:
-    timeout-ms: 5000
+    timeout-ms: 15000
     cache-ttl-ms: 60000
