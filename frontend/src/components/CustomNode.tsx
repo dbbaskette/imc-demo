@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { NodeData, DataGridItem } from '../types/diagram';
@@ -221,9 +221,9 @@ const CustomNode: React.FC<NodeProps<NodeData>> = ({ data, xPos, yPos }) => {
     }
   };
 
-  const closeDetailsModal = () => {
+  const closeDetailsModal = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
   // Generate input handles
   const inputHandleElements = [];

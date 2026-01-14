@@ -186,7 +186,7 @@ const renderDashboardComponent = (component: DashboardComponent, index: number):
   }
 };
 
-const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
+const NodeDetailModal: React.FC<NodeDetailModalProps> = React.memo(({
   isOpen,
   onClose,
   nodeData,
@@ -481,6 +481,6 @@ const NodeDetailModal: React.FC<NodeDetailModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(modalContent, document.body);
-};
+});
 
 export default NodeDetailModal;

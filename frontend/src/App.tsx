@@ -5,6 +5,7 @@ import { useSharedSSE } from './lib/sse'
 import Dashboard from './components/Dashboard'
 import RAGPipeline from './components/RAGPipeline'
 import TelemetryProcessing from './components/TelemetryProcessing'
+import CrashVisualization from './components/CrashVisualization'
 import Deployment from './components/Deployment'
 import DiagramView from './components/DiagramView'
 
@@ -94,6 +95,26 @@ function Sidebar() {
         {/* Headlights and taillights */}
         <circle cx="8" cy="8" r="0.5" fill="currentColor"/>
         <circle cx="16" cy="8" r="0.5" fill="currentColor"/>
+      </svg>
+    },
+    {
+      to: '/crash',
+      label: 'Crash Detection & FNOL',
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {/* Impact burst lines */}
+        <path d="M12 2L12 5"/>
+        <path d="M12 19L12 22"/>
+        <path d="M2 12L5 12"/>
+        <path d="M19 12L22 12"/>
+        <path d="M4.93 4.93L7.05 7.05"/>
+        <path d="M16.95 16.95L19.07 19.07"/>
+        <path d="M4.93 19.07L7.05 16.95"/>
+        <path d="M16.95 7.05L19.07 4.93"/>
+        {/* Center impact circle */}
+        <circle cx="12" cy="12" r="4"/>
+        {/* Inner exclamation */}
+        <path d="M12 10L12 12"/>
+        <circle cx="12" cy="14" r="0.5" fill="currentColor"/>
       </svg>
     },
     {
@@ -282,6 +303,7 @@ function Shell() {
               <Route path="/" element={<Dashboard recent={recent} />} />
               <Route path="/rag-pipeline" element={<RAGPipeline />} />
               <Route path="/telemetry" element={<TelemetryProcessing />} />
+              <Route path="/crash" element={<CrashVisualization />} />
               <Route path="/diagram" element={<DiagramView />} />
               <Route path="/deployment" element={<Deployment />} />
               <Route path="/settings" element={<SettingsPage />} />
