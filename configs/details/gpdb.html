@@ -1741,9 +1741,41 @@
             };
         }
 
-        // Refresh data function
-        function refreshData() {
-            location.reload();
+        // Refresh data function - re-fetches all data from API without full page reload
+        async function refreshData() {
+            console.log('Refreshing all data from API...');
+
+            // Show a brief loading indicator
+            const buttons = document.querySelectorAll('.action-button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            try {
+                // Clear cached service URL to force fresh resolution
+                imcDbServerUrl = null;
+
+                // Re-fetch all data
+                await Promise.all([
+                    loadModelInfo(),
+                    loadOverviewData()
+                ]);
+
+                // Refresh the current tab's data
+                const activeTab = document.querySelector('.tab-button.active');
+                if (activeTab) {
+                    const tabText = activeTab.textContent.trim().toLowerCase();
+                    if (tabText.includes('top')) {
+                        await loadTopPerformers();
+                    } else if (tabText.includes('risk')) {
+                        await loadHighRiskDrivers();
+                    }
+                }
+
+                console.log('Data refresh completed successfully');
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            } finally {
+                buttons.forEach(btn => btn.disabled = false);
+            }
         }
 
         // Initialize dashboard when page loads
