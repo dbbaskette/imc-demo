@@ -763,26 +763,35 @@
                         <div class="treemap-item good" style="flex: 4; background: #3b82f6; border-radius: 0.5rem; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
                             <div class="treemap-value" id="good-count" style="font-size: 2.5rem; font-weight: bold; color: white; line-height: 1;">0</div>
                             <div class="treemap-label" style="margin-top: auto;">
-                                <div style="color: white; font-weight: 700; font-size: 1.2rem;">75-89</div>
+                                <div style="color: white; font-weight: 700; font-size: 1.2rem;">80-89</div>
                                 <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Good</div>
                             </div>
                         </div>
 
-                        <!-- Fair drivers section -->
-                        <div class="treemap-item fair" style="flex: 2; background: #f59e0b; border-radius: 0.5rem; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-                            <div class="treemap-value" id="fair-count" style="font-size: 2.5rem; font-weight: bold; color: white; line-height: 1;">0</div>
+                        <!-- Average drivers section -->
+                        <div class="treemap-item average" style="flex: 2; background: #f59e0b; border-radius: 0.5rem; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                            <div class="treemap-value" id="average-count" style="font-size: 2.5rem; font-weight: bold; color: white; line-height: 1;">0</div>
                             <div class="treemap-label" style="margin-top: auto;">
-                                <div style="color: white; font-weight: 700; font-size: 1.2rem;">60-74</div>
-                                <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Fair</div>
+                                <div style="color: white; font-weight: 700; font-size: 1.2rem;">70-79</div>
+                                <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Average</div>
                             </div>
                         </div>
 
                         <!-- Poor drivers section -->
-                        <div class="treemap-item poor" style="flex: 1; background: #ef4444; border-radius: 0.5rem; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                        <div class="treemap-item poor" style="flex: 1; background: #f97316; border-radius: 0.5rem; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
                             <div class="treemap-value" id="poor-count" style="font-size: 2rem; font-weight: bold; color: white; line-height: 1;">0</div>
                             <div class="treemap-label" style="margin-top: auto;">
-                                <div style="color: white; font-weight: 700; font-size: 1rem;">0-59</div>
+                                <div style="color: white; font-weight: 700; font-size: 1rem;">60-69</div>
                                 <div style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">Poor</div>
+                            </div>
+                        </div>
+
+                        <!-- High Risk drivers section -->
+                        <div class="treemap-item high-risk" style="flex: 0.5; background: #ef4444; border-radius: 0.5rem; padding: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                            <div class="treemap-value" id="high-risk-count" style="font-size: 1.8rem; font-weight: bold; color: white; line-height: 1;">0</div>
+                            <div class="treemap-label" style="margin-top: auto;">
+                                <div style="color: white; font-weight: 700; font-size: 0.9rem;">&lt;60</div>
+                                <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">High Risk</div>
                             </div>
                         </div>
                     </div>
@@ -1075,22 +1084,24 @@
 
                 // Calculate distribution from available drivers
                 if (allDrivers.length > 0) {
-                    let excellent = 0, good = 0, fair = 0, poor = 0;
+                    let excellent = 0, good = 0, average = 0, poor = 0, highRisk = 0;
 
                     allDrivers.forEach(driver => {
                         const score = driver.safetyScore || 0;
                         if (score >= 90) excellent++;
-                        else if (score >= 75) good++;
-                        else if (score >= 60) fair++;
-                        else poor++;
+                        else if (score >= 80) good++;
+                        else if (score >= 70) average++;
+                        else if (score >= 60) poor++;
+                        else highRisk++;
                     });
 
                     // Now we have ALL 15 drivers with the higher limits
                     const distribution = {
-                        excellent: excellent,  // Count of 90-100 scores
-                        good: good,           // Count of 75-89 scores
-                        fair: fair,           // Count of 60-74 scores
-                        poor: poor            // Count of 0-59 scores
+                        excellent: excellent,  // Count of >= 90 scores
+                        good: good,           // Count of 80-89 scores
+                        average: average,     // Count of 70-79 scores
+                        poor: poor,           // Count of 60-69 scores
+                        highRisk: highRisk    // Count of < 60 scores
                     };
 
                     console.log('Calculated safety distribution from real data:', distribution);
@@ -1108,32 +1119,37 @@
         function updateSafetyDistribution(scoreData) {
             const excellent = scoreData.excellent || 0;
             const good = scoreData.good || 0;
-            const fair = scoreData.fair || 0;
+            const average = scoreData.average || 0;
             const poor = scoreData.poor || 0;
+            const highRisk = scoreData.highRisk || 0;
 
             // Update the count text for treemap visualization
             const excellentEl = document.getElementById('excellent-count');
             const goodEl = document.getElementById('good-count');
-            const fairEl = document.getElementById('fair-count');
+            const averageEl = document.getElementById('average-count');
             const poorEl = document.getElementById('poor-count');
+            const highRiskEl = document.getElementById('high-risk-count');
 
             if (excellentEl) excellentEl.textContent = excellent;
             if (goodEl) goodEl.textContent = good;
-            if (fairEl) fairEl.textContent = fair;
+            if (averageEl) averageEl.textContent = average;
             if (poorEl) poorEl.textContent = poor;
+            if (highRiskEl) highRiskEl.textContent = highRisk;
 
             // Optionally update flex values to reflect relative sizes
-            const total = excellent + good + fair + poor;
+            const total = excellent + good + average + poor + highRisk;
             if (total > 0) {
                 const excellentItem = document.querySelector('.treemap-item.excellent');
                 const goodItem = document.querySelector('.treemap-item.good');
-                const fairItem = document.querySelector('.treemap-item.fair');
+                const averageItem = document.querySelector('.treemap-item.average');
                 const poorItem = document.querySelector('.treemap-item.poor');
+                const highRiskItem = document.querySelector('.treemap-item.high-risk');
 
                 if (excellentItem) excellentItem.style.flex = Math.max(1, (excellent / total) * 10);
                 if (goodItem) goodItem.style.flex = Math.max(1, (good / total) * 10);
-                if (fairItem) fairItem.style.flex = Math.max(1, (fair / total) * 10);
+                if (averageItem) averageItem.style.flex = Math.max(1, (average / total) * 10);
                 if (poorItem) poorItem.style.flex = Math.max(0.5, (poor / total) * 10);
+                if (highRiskItem) highRiskItem.style.flex = Math.max(0.5, (highRisk / total) * 10);
             }
         }
 
@@ -1213,8 +1229,9 @@
             return {
                 excellent: 0,
                 good: 0,
-                fair: 0,
-                poor: 0
+                average: 0,
+                poor: 0,
+                highRisk: 0
             };
         }
 
