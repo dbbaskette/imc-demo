@@ -1463,9 +1463,9 @@
                 }
             }
 
-            // Note: Job status via proxy to imc-db-server, will fall back to simulation
-            const jobStatusUrl = encodeURIComponent(`${imcDbServerUrl}/api/db01/ml/job-status/${jobId}`);
-            fetch(`/api/metrics?url=${jobStatusUrl}&node=gpdb`)
+            // Call job status endpoint directly
+            const directUrl = `${imcDbServerUrl}/api/db01/ml/job-status/${jobId}`;
+            fetch(directUrl)
                 .then(response => {
                     console.log('API Response status:', response.status);
                     if (!response.ok) {
@@ -1473,7 +1473,9 @@
                     }
                     return response.json();
                 })
-                .then(data => {
+                .then(response => {
+                    // Extract data from ApiResponse wrapper
+                    const data = response.data || response;
                     console.log('Job status data:', data);
 
                     if (data.status === 'COMPLETED') {
@@ -1493,11 +1495,11 @@
                             progressInterval = null;
                         }
                         setTimeout(() => hideMLProgress(), 3000);
-                    } else if (data.status === 'IN_PROGRESS') {
+                    } else if (data.status === 'RUNNING' || data.status === 'IN_PROGRESS') {
                         updateMLProgress(data.progress || 0, data.message || 'Processing...');
                     } else {
                         // Handle other statuses or use simulated progress
-                        console.log('Unknown status, using simulation');
+                        console.log('Unknown status:', data.status, 'using simulation');
                         simulateProgress();
                     }
                 })
@@ -1569,9 +1571,11 @@
                 }
             }
 
-            // Note: ML recalculate via proxy to imc-db-server, will fall back to simulation
-            const recalcUrl = encodeURIComponent(`${imcDbServerUrl}/api/db01/ml/recalculate`);
-            fetch(`/api/metrics?url=${recalcUrl}&node=gpdb`, {
+            // Call the ML recalculate endpoint directly (POST not supported by proxy)
+            const directUrl = `${imcDbServerUrl}/api/db01/ml/recalculate`;
+            console.log('Calling ML recalculate directly:', directUrl);
+
+            fetch(directUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1582,10 +1586,14 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text();
+                return response.json();
             })
-            .then(jobId => {
-                console.log('Received job ID:', jobId);
+            .then(data => {
+                console.log('Received response:', data);
+                const jobId = data.data?.jobId || data.jobId;
+                if (!jobId) {
+                    throw new Error('No job ID in response');
+                }
                 currentJobId = jobId;
                 updateMLProgress(5, 'Job started, tracking progress...');
 
