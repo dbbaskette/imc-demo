@@ -343,13 +343,13 @@
       },
       "dataGrid": [
         {
-          "label": "Active Claims",
-          "url": "${CRASH-ORCHESTRATOR}/api/accidents/count",
+          "label": "Accidents Reported",
+          "url": "${CRASH-ORCHESTRATOR}/api/stats/accidents-reported",
           "valueField": "count"
         },
         {
           "label": "FNOL Processed",
-          "url": "${CRASH-ORCHESTRATOR}/api/stats/fnol",
+          "url": "${CRASH-ORCHESTRATOR}/api/stats/fnol-processed",
           "valueField": "processed"
         }
       ],
@@ -517,12 +517,12 @@
       "dataGrid": [
         {
           "label": "SMS Sent",
-          "url": "${CRASH-COMMUNICATIONS}/api/stats/sms",
+          "url": "${CRASH-ORCHESTRATOR}/api/stats/sms",
           "valueField": "sent"
         },
         {
           "label": "Emails Sent",
-          "url": "${CRASH-COMMUNICATIONS}/api/stats/email",
+          "url": "${CRASH-ORCHESTRATOR}/api/stats/email",
           "valueField": "sent"
         }
       ],
