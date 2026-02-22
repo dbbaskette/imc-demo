@@ -1,3 +1,9 @@
+export interface ZoneNotch {
+  corner: 'top-right';
+  width: number;
+  height: number;
+}
+
 export interface Zone {
   id: string;
   label: string;
@@ -5,6 +11,7 @@ export interface Zone {
   borderColor?: string;
   backgroundColor?: string;
   labelColor?: string;
+  notch?: ZoneNotch;
 }
 
 export interface DiagramConfig {

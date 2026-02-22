@@ -18,9 +18,9 @@ import ParticleEdge from './ParticleEdge';
 import ZoneNode from './ZoneNode';
 import type { DiagramConfig, DiagramNode, Zone } from '../types/diagram';
 
-const NODE_WIDTH_ESTIMATE = 220;
+const NODE_WIDTH_ESTIMATE = 190;
 const NODE_HEIGHT_ESTIMATE = 200;
-const ZONE_PAD = { top: 60, right: 60, bottom: 120, left: 60 };
+const ZONE_PAD = { top: 50, right: 20, bottom: 60, left: 60 };
 
 const nodeTypes = {
   custom: CustomNode,
@@ -65,6 +65,7 @@ function buildZoneNodes(zones: Zone[], nodePositions: Record<string, { x: number
         borderColor: zone.borderColor || '#00C48C',
         backgroundColor: zone.backgroundColor || 'rgba(0, 196, 140, 0.05)',
         labelColor: zone.labelColor || '#00C48C',
+        notch: zone.notch,
       },
     };
   }).filter(Boolean);

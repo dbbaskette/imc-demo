@@ -16,7 +16,12 @@
       "nodes": ["telegen", "teleExchange", "HDFSsink", "crashSink", "vehicleExchange", "crashOrchestrator", "JDBCsink", "communicationsService"],
       "borderColor": "#00C48C",
       "backgroundColor": "rgba(0, 196, 140, 0.05)",
-      "labelColor": "#00C48C"
+      "labelColor": "#00C48C",
+      "notch": {
+        "corner": "top-right",
+        "width": 460,
+        "height": 210
+      }
     }
   ],
   "nodes": [
