@@ -9,6 +9,16 @@
       "spread": 12
     }
   },
+  "zones": [
+    {
+      "id": "tanzu-platform",
+      "label": "TANZU PLATFORM",
+      "nodes": ["telegen", "teleExchange", "HDFSsink", "EventsProc", "vehicleExchange", "JDBCsink", "logsink"],
+      "borderColor": "#00C48C",
+      "backgroundColor": "rgba(0, 196, 140, 0.05)",
+      "labelColor": "#00C48C"
+    }
+  ],
   "nodes": [
     {
       "name": "telegen",

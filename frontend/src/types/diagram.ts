@@ -1,3 +1,12 @@
+export interface Zone {
+  id: string;
+  label: string;
+  nodes: string[];
+  borderColor?: string;
+  backgroundColor?: string;
+  labelColor?: string;
+}
+
 export interface DiagramConfig {
   config: {
     layout: 'horizontal' | 'vertical';
@@ -10,6 +19,7 @@ export interface DiagramConfig {
     };
   };
   nodes: DiagramNode[];
+  zones?: Zone[];
 }
 
 export interface Connection {

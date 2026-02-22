@@ -8,6 +8,7 @@ import TelemetryProcessing from './components/TelemetryProcessing'
 import CrashVisualization from './components/CrashVisualization'
 import Deployment from './components/Deployment'
 import DiagramView from './components/DiagramView'
+import DemoVideo from './components/DemoVideo'
 
 const queryClient = new QueryClient()
 
@@ -134,6 +135,13 @@ function Sidebar() {
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9,22 9,12 15,12 15,22"/>
+      </svg>
+    },
+    {
+      to: '/demo-video',
+      label: 'Demo Video',
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="5,3 19,12 5,21 5,3"/>
       </svg>
     }
   ]
@@ -306,6 +314,7 @@ function Shell() {
               <Route path="/crash" element={<CrashVisualization />} />
               <Route path="/diagram" element={<DiagramView />} />
               <Route path="/deployment" element={<Deployment />} />
+              <Route path="/demo-video" element={<DemoVideo />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </main>

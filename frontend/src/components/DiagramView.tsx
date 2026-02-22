@@ -15,16 +15,60 @@ import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
 import CustomCurvedEdge from './CustomEdge';
 import ParticleEdge from './ParticleEdge';
-import type { DiagramConfig, DiagramNode } from '../types/diagram';
+import ZoneNode from './ZoneNode';
+import type { DiagramConfig, DiagramNode, Zone } from '../types/diagram';
+
+const NODE_WIDTH_ESTIMATE = 220;
+const NODE_HEIGHT_ESTIMATE = 200;
+const ZONE_PAD = { top: 60, right: 60, bottom: 120, left: 60 };
 
 const nodeTypes = {
   custom: CustomNode,
+  zone: ZoneNode,
 };
 
 const edgeTypes = {
   curved: CustomCurvedEdge,
   particle: ParticleEdge,
 };
+
+function buildZoneNodes(zones: Zone[], nodePositions: Record<string, { x: number; y: number }>) {
+  return zones.map((zone) => {
+    const memberPositions = zone.nodes
+      .map((id) => nodePositions[id])
+      .filter(Boolean);
+
+    if (memberPositions.length === 0) return null;
+
+    const minX = Math.min(...memberPositions.map((p) => p.x));
+    const maxX = Math.max(...memberPositions.map((p) => p.x));
+    const minY = Math.min(...memberPositions.map((p) => p.y));
+    const maxY = Math.max(...memberPositions.map((p) => p.y));
+
+    const x = minX - ZONE_PAD.left;
+    const y = minY - ZONE_PAD.top;
+    const width = maxX - minX + NODE_WIDTH_ESTIMATE + ZONE_PAD.left + ZONE_PAD.right;
+    const height = maxY - minY + NODE_HEIGHT_ESTIMATE + ZONE_PAD.top + ZONE_PAD.bottom;
+
+    return {
+      id: `zone-${zone.id}`,
+      type: 'zone' as const,
+      position: { x, y },
+      draggable: false,
+      selectable: false,
+      connectable: false,
+      zIndex: -1,
+      data: {
+        label: zone.label,
+        width,
+        height,
+        borderColor: zone.borderColor || '#00C48C',
+        backgroundColor: zone.backgroundColor || 'rgba(0, 196, 140, 0.05)',
+        labelColor: zone.labelColor || '#00C48C',
+      },
+    };
+  }).filter(Boolean);
+}
 
 interface DiagramViewProps {
   onConfigLoad?: (config: DiagramConfig) => void;
@@ -155,7 +199,16 @@ const DiagramView: React.FC<DiagramViewProps> = ({ onConfigLoad, selectedDiagram
           });
         });
 
-        setNodes(flowNodes);
+        // Build zone nodes from config
+        const allFlowNodes = [...flowNodes];
+        if (data.zones && data.zones.length > 0) {
+          const nodePositions: Record<string, { x: number; y: number }> = {};
+          flowNodes.forEach((n: any) => { nodePositions[n.id] = n.position; });
+          const zoneNodes = buildZoneNodes(data.zones, nodePositions);
+          allFlowNodes.unshift(...(zoneNodes as any[]));
+        }
+
+        setNodes(allFlowNodes);
         setEdges(flowEdges);
         setLoading(false);
       } catch (error) {
@@ -175,21 +228,35 @@ const DiagramView: React.FC<DiagramViewProps> = ({ onConfigLoad, selectedDiagram
   // Handle node position changes and save to localStorage
   const handleNodesChange = useCallback((changes: any[]) => {
     onNodesChange(changes);
-    
+
     // Save positions when nodes are moved
     const positionChanges = changes.filter(change => change.type === 'position' && change.position);
     if (positionChanges.length > 0) {
       const savedPositionsKey = `diagram-positions-${selectedDiagram}`;
       const currentPositions = JSON.parse(localStorage.getItem(savedPositionsKey) || '{}');
-      
+
       positionChanges.forEach(change => {
         currentPositions[change.id] = change.position;
       });
-      
+
       localStorage.setItem(savedPositionsKey, JSON.stringify(currentPositions));
-      console.log(`Saved positions for ${selectedDiagram}:`, currentPositions);
+
+      // Recalculate zone positions
+      if (config?.zones && config.zones.length > 0) {
+        setNodes((currentNodes) => {
+          const nodePositions: Record<string, { x: number; y: number }> = {};
+          currentNodes.forEach((n) => {
+            if (n.type !== 'zone') {
+              nodePositions[n.id] = n.position;
+            }
+          });
+          const updatedZones = buildZoneNodes(config.zones!, nodePositions);
+          const nonZoneNodes = currentNodes.filter((n) => n.type !== 'zone');
+          return [...(updatedZones as any[]), ...nonZoneNodes];
+        });
+      }
     }
-  }, [onNodesChange, selectedDiagram]);
+  }, [onNodesChange, selectedDiagram, config]);
 
   if (loading) {
     return (
